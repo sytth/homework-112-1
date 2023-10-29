@@ -23,7 +23,7 @@ int find(int colorFind , int i, int j, int dx, int dy, int chess[8][8], int test
                             j += dx;
                             continue;
                         }
-                        else{
+                        else{                   //找到空白處(可以下的地方)
                             test = 1;
                             return test;
                         }
