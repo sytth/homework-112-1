@@ -23,7 +23,7 @@ int find(int colorFind , int i, int j, int dx, int dy, int chess[8][8], int test
                             j += dx;
                             continue;
                         }
-                        else{                   //找到空白處(可以下的地方)
+                        else if(chess[i][j] == 1){   //找到黑棋，這個點可以下黑棋
                             test = 1;
                             return test;
                         }
@@ -45,7 +45,7 @@ int find(int colorFind , int i, int j, int dx, int dy, int chess[8][8], int test
                             j += dx;
                             continue;
                         }
-                        else{                           //下下一步是白棋，可以放
+                        else if(chess[i][j] == 2){       //找到白棋，這個點可以下白棋
                             test = 1;
                             return test;
                         }

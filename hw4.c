@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #define Bound(x,y) (x>=0 && x<=7 && y>=0 && y<=7)
 
-
+//找出可下的位置
 int find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,int next[8][8]){ 
     //以白棋為例
     while(Bound(i,j)){                      
@@ -19,7 +19,7 @@ int find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,int
                     j += dx;                
                     continue;
                 }
-                else{                           //下下一步是空白，可以放
+                else{                           //下下一步是空白，可以放(不可能跳一格還會是白棋，這樣上一局就應該翻棋子了，so可以只寫else)
                     next[i][j] = color;         //紀錄這個位置可以放白棋
                     return 0;
                 }
@@ -85,7 +85,7 @@ int main(){
         } 
     }
     
-    int black=0, white=0;
+    int black=0, white=0;                       //控制逗號個數
     
     printf("白子可下位置:\n");
     for(int a=0; a<8; a++){                     //輸出白子可放的位置
