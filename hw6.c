@@ -65,6 +65,7 @@ void find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,in
         }
     
     }
+    return;
 }
 
 //輸出目前棋盤
@@ -111,16 +112,22 @@ int turn(int m, int n, int dx, int dy, int chess[8][8], int color,int count){   
 
 //計算這步可翻多少棋子  2.翻轉棋子
 int turn_count(int i,int j,int chess[8][8],int color,int judge,int can_turn){
-    int turn_sum = 0,dx,dy;
-    turn_sum += sum(i,j,dx=1,dy=0,chess,color,judge,can_turn);   //右 
-    turn_sum += sum(i,j,dx=-1,dy=0,chess,color,judge,can_turn);   //左
-    turn_sum += sum(i,j,dx=0,dy=-1,chess,color,judge,can_turn);   //上
-    turn_sum += sum(i,j,dx=0,dy=1,chess,color,judge,can_turn);   //下
-    turn_sum += sum(i,j,dx=1,dy=1,chess,color,judge,can_turn);   //右下
-    turn_sum += sum(i,j,dx=-1,dy=1,chess,color,judge,can_turn);   //左下
-    turn_sum += sum(i,j,dx=1,dy=-1,chess,color,judge,can_turn);   //右上
-    turn_sum += sum(i,j,dx=-1,dy=-1,chess,color,judge,can_turn);   //左上
-
+    int turn_sum = 0,dx,dy,count[8];
+    count[0] = sum(i,j,dx=1,dy=0,chess,color,judge,can_turn);   //右 
+    count[1] = sum(i,j,dx=-1,dy=0,chess,color,judge,can_turn);   //左
+    count[2] = sum(i,j,dx=0,dy=-1,chess,color,judge,can_turn);   //上
+    count[3] = sum(i,j,dx=0,dy=1,chess,color,judge,can_turn);   //下
+    count[4] = sum(i,j,dx=1,dy=1,chess,color,judge,can_turn);   //右下
+    count[5] = sum(i,j,dx=-1,dy=1,chess,color,judge,can_turn);   //左下
+    count[6] = sum(i,j,dx=1,dy=-1,chess,color,judge,can_turn);   //右上
+    count[7] = sum(i,j,dx=-1,dy=-1,chess,color,judge,can_turn);   //左上
+    
+    for(int a=0; a<=7; a++){
+        turn_sum += count[a];
+        if(count[a] == 100){
+            turn_sum -= 100;
+        }
+    }
     return turn_sum;
 }
 
@@ -153,13 +160,14 @@ int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int c
                     }
                 }
                 else if(chess[i][j] == 0)
-                    return 0;
+                    return 100;
             }
         }
         else if(chess[i][j] == 0){
-            return 0;
+            return 100;
         }
     }
+    return 100;
 }
 
 
@@ -218,17 +226,27 @@ int main(){
         }
         You_can_set(color = 2,next);                //輸出可放的位置
 
+        int count[8];
         for(int i=0; i<=7; i++){                //判斷白棋下的最佳位置 1.計算每個位置可翻的棋子個數 2.比較
             for(int j=0; j<=7; j++){
                 if(next[i][j] == 2){
-                    compare[i][j] += sum(i,j,dx=1,dy=0,chess,color,judge,can_turn);   //右 
-                    compare[i][j] += sum(i,j,dx=-1,dy=0,chess,color,judge,can_turn);   //左
-                    compare[i][j] += sum(i,j,dx=0,dy=-1,chess,color,judge,can_turn);   //上
-                    compare[i][j] += sum(i,j,dx=0,dy=1,chess,color,judge,can_turn);   //下
-                    compare[i][j] += sum(i,j,dx=1,dy=1,chess,color,judge,can_turn);   //右下
-                    compare[i][j] += sum(i,j,dx=-1,dy=1,chess,color,judge,can_turn);   //左下
-                    compare[i][j] += sum(i,j,dx=1,dy=-1,chess,color,judge,can_turn);   //右上
-                    compare[i][j] += sum(i,j,dx=-1,dy=-1,chess,color,judge,can_turn);   //左上
+                    count[0] = sum(i,j,dx=1,dy=0,chess,color,judge,can_turn);   //右 
+                    count[1] = sum(i,j,dx=-1,dy=0,chess,color,judge,can_turn);   //左
+                    count[2] = sum(i,j,dx=0,dy=-1,chess,color,judge,can_turn);   //上
+                    count[3] = sum(i,j,dx=0,dy=1,chess,color,judge,can_turn);   //下
+                    count[4] = sum(i,j,dx=1,dy=1,chess,color,judge,can_turn);   //右下
+                    count[5] = sum(i,j,dx=-1,dy=1,chess,color,judge,can_turn);   //左下
+                    count[6] = sum(i,j,dx=1,dy=-1,chess,color,judge,can_turn);   //右上
+                    count[7] = sum(i,j,dx=-1,dy=-1,chess,color,judge,can_turn);   //左上
+                    
+                    for(int a=0; a<=7; a++){
+                        turn_sum += count[a];
+                        if(count[a] == 100){
+                            turn_sum -= 100;
+                        }
+                    }
+                    compare[i][j] = turn_sum;
+                    turn_sum = 0;
                 }
             }
         }
