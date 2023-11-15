@@ -67,7 +67,7 @@ int main(){
         } 
     }
 
-    scanf("%d %d %c %d",&colorFind,&i,&other,&j);  //colorFind : 是否可以下這個顏色的棋子
+    scanf("%d %d  %d",&colorFind,&i,&j);  //colorFind : 是否可以下這個顏色的棋子
     color = chess[i][j];                          //color : 輸入的座標上棋子的顏色
 
     switch (color){

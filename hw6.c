@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #define Bound(x,y) (x>=0 && x<=7 && y>=0 && y<=7)
 
 int find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,int next[8][8]);
@@ -11,6 +13,7 @@ int turn_count(int i,int j,int chess[8][8],int color,int judge,int can_turn);
 
 //一個一個檢查棋盤上的白子or黑子  i:y軸 j:x軸
 int check(int chess[8][8],int next[8][8],int color,int judge){
+
     int dx,dy,can_set=0;
     for(int i=0; i<8; i++){                
         for(int j=0; j<8; j++){
@@ -23,45 +26,55 @@ int check(int chess[8][8],int next[8][8],int color,int judge){
                 can_set += find(i,j,dx=-1,dy=1,chess,color,judge,next);   //左下
                 can_set += find(i,j,dx=1,dy=-1,chess,color,judge,next);   //右上
                 can_set += find(i,j,dx=-1,dy=-1,chess,color,judge,next);   //左上
+
             }
         } 
     }
+    printf("**can_set:%d\n\n",can_set);
     return can_set;
 }
 
 //找出可下的位置(以白棋為例)
 int find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,int next[8][8]){ 
-    while(Bound(i,j)){                      
+    while(Bound(i,j)){     
         i += dy;                            //i:控制y軸(直向)   j:控制x軸(橫向)
         j += dx;                            //先走出一步
 
         if(chess[i][j] != judge){           //下一步是白棋or空白，這個方向直接跳過
-            return 0;
+            return false;
         }
-        else {                              //下一步是黑棋
-            while(Bound(i,j)){                  
-                if(chess[i][j] == judge){       //測下下一步是不是黑棋
-                    i += dy;                    //(如果是黑棋再往下找有沒有空白處，找不到最後會跳出while迴圈，then break)
-                    j += dx;                
-                    continue;
-                }
-                else{                           //下下一步是空白，可以放(不可能跳一格還會是白棋，這樣上一局就應該翻棋子了，so可以只寫else)
-                    next[i][j] = color;         //紀錄這個位置可以放白棋
-                    return 1;
-                }
+                                    //下一步是黑棋
+        while(Bound(i,j)){    
+            //printf("%d,%d\n",i,j);              
+            if(chess[i][j] == judge){       //測下下一步是不是黑棋
+                i += dy;                    //(如果是黑棋再往下找有沒有空白處，找不到最後會跳出while迴圈，then break)
+                j += dx;               
+            }
+            else if(chess[i][j] == 0){       //下下一步是空白，可以放
+                next[i][j] = color;         //紀錄這個位置可以放白棋
+                //printf("next[%d][%d]:%d\n",i,j,next[i][j]);
+                return true;
+            }
+            else if(chess[i][j] == color){
+                return false;
             }
         }
+    
     }
 }
 
 //輸出目前棋盤
 int NowChess(int chess[8][8]){
+
+    printf("\n------------------------------\n");
     for(int a=0; a<8; a++){                   
         for(int b=0; b<8; b++){
             printf("%d ",chess[a][b]);
         }
         printf("\n");
     }
+    printf("\n------------------------------\n");
+
     return 0;
 }
 
@@ -109,7 +122,7 @@ int turn_count(int i,int j,int chess[8][8],int color,int judge,int can_turn){
 
 
 //計算可翻多少棋子-各方向計算(以白棋為例)
-int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int can_turn){     //color：要下哪個顏色的棋子 judge：判斷的棋子顏色
+int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int can_turn){      //color：要下哪個顏色的棋子 judge：判斷的棋子顏色
     int count = 0;                          //這個方向可以翻的棋子數量
 
     while(Bound(i,j)){               
@@ -118,7 +131,7 @@ int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int c
         j += dx;                            //先走出一步
 
         if(chess[i][j] != judge){           //下一步是白棋or空白，這個方向直接跳過
-            return 0;
+            return false;
         }
         else {                              //下一步是黑棋
             while(Bound(i,j)){                  
@@ -126,7 +139,6 @@ int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int c
                     count++;                    //(如果是黑棋再往下找有沒有白棋，找不到最後會跳出while迴圈，then break)
                     i += dy;                    
                     j += dx;                
-                    continue;
                 }
                 else if(chess[i][j] == color){      //下下一步是白棋，可以翻
                     if(color == 2 && can_turn == 0){                             //統計白棋放各位置可翻的數量(先不翻)
@@ -139,7 +151,7 @@ int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int c
                     }
                 }
                 else if(chess[i][j] == 0)
-                    return 0;
+                    return false;
             }
         }
     }
@@ -147,7 +159,7 @@ int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int c
 
 
 int main(){
-    int i,j,dx,dy,color,judge,control=0;
+    int i,j,dx,dy,color,judge,control=0, next[8][8];
     int chess[8][8]={{0,0,0,0,0,0,0,0},         //初始棋盤
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0},
@@ -157,14 +169,17 @@ int main(){
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0}
                     };
+                    
     while (control == 0){
         //******下黑棋******
-        int turn_sum = 0,black=0,next[8][8] = {},can_turn=1;   //清空可下的位置棋盤陣列next
+        memset(next, 0, sizeof(int)*8*8);
+        int turn_sum = 0,black=0,can_turn=1;   //清空可下的位置棋盤陣列next
         color = 1;
         judge = 2;
-        printf("1 黑棋你下\n");
+        printf("1 black,your turn\n");
         NowChess(chess);                            //輸出目前棋盤
         black = check(chess,next,color,judge);      //尋找能放的位置
+        printf("**black:%d\n\n",black);
         if(black == 0){                             //***沒有可放的位置，結束遊戲
             break;
         }        
@@ -172,22 +187,25 @@ int main(){
         printf("\n請下合法的位子 x y\n");
         scanf("%d%d",&i,&j);                        //輸入黑棋要下的位置
         turn_sum = turn_count(i,j,chess,color,judge,can_turn);         //1.計算這步可翻多少棋子  2.翻轉棋子
-        printf("可翻轉 %d 子\n",turn_sum);
+        printf("black can turn %d\n",turn_sum);
 
         for(int a=0; a<=7; a++){                        //清空可下的位置棋盤陣列next
             for(int b=0; b<=7; b++){
                next[a][b] = 0;
             }
         }
-
     
         //******下白棋******
-        int white=0,compare[8][8]={};       
+        int white=0,compare[8][8];
+        memset(compare, 0, sizeof(int)*8*8);       
         turn_sum = 0,can_turn=0;
         color = 2;
         judge = 1;
-        printf("2 白棋電腦下\n");
+        printf("2 white,computer\n");
+        NowChess(chess);
         white = check(chess,next,color,judge);      //尋找能放的位置
+        printf("**white:%d\n\n",white);
+
         if(white == 0){                             //***沒有可放的位置，結束遊戲
             break;
         }
@@ -220,7 +238,7 @@ int main(){
         }
         can_turn=1;
         turn_sum = turn_count(i,j,chess,color,judge,can_turn);         //1.計算這步可翻多少棋子  2.翻轉棋子
-        printf("電腦下 %d,%d ,可翻轉 %d 子\n",i,j,turn_sum);
+        printf("(%d,%d) ,white can turn %d\n",i,j,turn_sum);
     }
 
     //結束遊戲，判斷輸贏
@@ -234,15 +252,15 @@ int main(){
                 white++;
         }
     }
-    printf("棋局結束");
+    printf("game over\n");
     if(black > white)
-        printf("黑方勝 %d:%d",black,white);
+        printf("black win %d:%d\n",black,white);
     
     else if(black < white)
-        printf("白方勝 %d:%d",black,white);
+        printf("white win %d:%d\n",black,white);
 
     else if(black == white)
-        printf("平手 %d:%d",black,white);
+        printf("tie %d:%d\n",black,white);
 
    return 0;
 }
