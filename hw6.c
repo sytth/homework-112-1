@@ -11,7 +11,7 @@ int turn(int m, int n, int dx, int dy, int chess[8][8], int judge,int count);
 int sum(int i, int j, int dx, int dy, int chess[8][8],int color, int judge,int can_turn);
 int turn_count(int i,int j,int chess[8][8],int color,int judge,int can_turn);
 
-//一個一個檢查棋盤上的白子or黑子  i:y軸 j:x軸
+//一個一個檢查棋盤上的白子or黑子的八方  i:y軸 j:x軸
 int check(int chess[8][8],int next[8][8],int color,int judge){
     int dx,dy,can_set=0;
     for(int i=0; i<8; i++){                
@@ -101,7 +101,7 @@ int You_can_set(int color, int next[8][8]){
     return 0;
 }
 
-//翻轉成正確棋盤(以白棋為例，)
+//翻轉成正確棋盤(以白棋為例)
 int turn(int m, int n, int dx, int dy, int chess[8][8], int color,int count){     //judge：白要翻成黑
     for(int a =1; a<=count+1; a++){
         chess[m][n] = color;
@@ -110,7 +110,7 @@ int turn(int m, int n, int dx, int dy, int chess[8][8], int color,int count){   
     }
 }
 
-//計算這步可翻多少棋子  2.翻轉棋子
+//計算這步可翻多少棋子
 int turn_count(int i,int j,int chess[8][8],int color,int judge,int can_turn){
     int turn_sum = 0,dx,dy,count[8];
     count[0] = sum(i,j,dx=1,dy=0,chess,color,judge,can_turn);   //右 
