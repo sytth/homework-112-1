@@ -9,11 +9,37 @@ typedef struct Position{
 }position;
 
 position stack[MAX_N*MAX_N];         //宣告stack
-int top = -1;                   //stack初始位置在-1
+int top = 0;                         //stack初始位置
+position end = {6,9};
+int maze[MAX_N][MAX_N] ={               //1:牆壁 0:可走的路 2:走過的路
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    { 0, 0, 0, 1, 1, 0, 1, 1, 0, 1 },
+    { 1, 0, 1, 1, 0, 0, 0, 0, 0, 1 },
+    { 1, 0, 0, 0, 0, 1, 0, 1, 0, 1 },
+    { 1, 1, 1, 0, 1, 1, 0, 1, 1, 1 },
+    { 1, 0, 1, 1, 1, 0, 0, 1, 0, 1 },
+    { 1, 0, 0, 0, 0, 0, 1, 1, 0, 0 },
+    { 1, 0, 1, 1, 1, 1, 1, 0, 0, 1 },
+    { 1, 0, 0, 0, 1, 0, 0, 0, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+};
 
-int walk_the_maze(int maze[MAX_N][MAX_N],position start, position end){
 
+void push(position i_j){
+    if(top >= MAX_N*MAX_N)
+        return;
+    
+    top++;
+    stack[top] = i_j;
+}
 
+position pop(){
+    if(top ==-1)
+        return;
+    
+    position result = stack[top];
+    top--;
+    return result;
 }
 
 
@@ -22,24 +48,50 @@ int walk_the_maze(int maze[MAX_N][MAX_N],position start, position end){
 
 
 int main(){
-    int maze[MAX_N][MAX_N] ={               //1:牆壁 0:可走的路
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 0, 0, 0, 1, 1, 0, 1, 1, 0, 1 },
-        { 1, 0, 1, 1, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 1, 0, 1, 0, 1 },
-        { 1, 1, 1, 0, 1, 1, 0, 1, 1, 1 },
-        { 1, 0, 1, 1, 1, 0, 0, 1, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 1, 1, 0, 0 },
-        { 1, 0, 1, 1, 1, 1, 1, 0, 0, 1 },
-        { 1, 0, 0, 0, 1, 0, 0, 0, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-    };
-    position start,end;
-    start.i = 1;
-    start.j = 0;
-    end.i = 6;
-    end.j = 9;
-    walk_the_maze(maze,start,end);
+    position start = {1,0};
+    position now = {start.i, start.j};
+    int success = 0;
+
+    while(Bound(now.i,now.j)){
+        if(now.i == end.i && now.j == end.j)  //成功break
+        {
+            success = 1;
+            break;
+        }
+
+        else if(success != 1 && maze[now.i][now.j-1] == 0)   //往上
+        {
+            maze[now.i][now.j] = 2;
+            push(now);
+            now.j--;
+        }
+        else if(success != 1 && maze[now.i][now.j+1] == 0)   //往下
+        {
+            maze[now.i][now.j] = 2;
+            push(now);
+            now.j++;
+        }
+        else if(success != 1 && maze[now.i-1][now.j] == 0)   //往左
+        {
+            maze[now.i][now.j] = 2;
+            push(now);
+            now.i--;
+        }
+        else if(success != 1 && maze[now.i+1][now.j] == 0)   //往右
+        {
+            maze[now.i][now.j] = 2;
+            push(now);
+            now.i++;
+        }
+
+        else            //退 回 去
+        {
+            now = pop();
+        }
+
+    }
+
+
     
 
     return 0;
