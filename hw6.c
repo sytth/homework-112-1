@@ -56,7 +56,6 @@ void find(int i, int j, int dx, int dy, int chess[8][8], int color, int judge,in
             }
             else if(chess[i][j] == 0){       //下下一步是空白，可以放
                 next[i][j] = color;         //紀錄這個位置可以放白棋
-                //printf("next[%d][%d]:%d\n",i,j,next[i][j]);
                 return;
             }
             else if(chess[i][j] == color){

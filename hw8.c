@@ -20,7 +20,7 @@ int maze[MAX_N][MAX_N] ={               //1:牆壁 0:可走的路 2:走過的路
     { 1, 0, 1, 1, 1, 0, 0, 1, 0, 1 },
     { 1, 0, 0, 0, 0, 0, 1, 1, 0, 0 },
     { 1, 0, 1, 1, 1, 1, 1, 0, 0, 1 },
-    { 1, 0, 0, 0, 1, 0, 0, 0, 1, 1 },
+    { 1, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 };
 
@@ -28,21 +28,38 @@ int maze[MAX_N][MAX_N] ={               //1:牆壁 0:可走的路 2:走過的路
 void push(position i_j){
     if(top >= MAX_N*MAX_N)
         return;
-    
-    top++;
+
     stack[top] = i_j;
+    top++;
 }
 
 position pop(){
-    if(top ==-1)
-        return;
-    
-    position result = stack[top];
+    position fail = {-1,-1};
+    if(top == 0)
+        return fail;
+
     top--;
+    position result = stack[top];
     return result;
 }
 
-
+void print_maze(){
+    for(int i=0; i<=9; i++){
+        for(int j=0; j<=9; j++){
+            int judge = 0;
+            for(int m=0; m<top; m++){
+                if(i==stack[m].i && j==stack[m].j){
+                    printf("@ ");
+                    judge = 1;
+                    break;
+                }
+            }
+            if(judge == 0)
+                printf("%d ",maze[i][j]);
+        }
+        printf("\n");
+    }
+}
 
 
 
@@ -59,25 +76,25 @@ int main(){
             break;
         }
 
-        else if(success != 1 && maze[now.i][now.j-1] == 0)   //往上
+        else if(success != 1 && maze[now.i][now.j-1] == 0)   //往左
         {
             maze[now.i][now.j] = 2;
             push(now);
             now.j--;
         }
-        else if(success != 1 && maze[now.i][now.j+1] == 0)   //往下
+        else if(success != 1 && maze[now.i][now.j+1] == 0)   //往右
         {
             maze[now.i][now.j] = 2;
             push(now);
             now.j++;
         }
-        else if(success != 1 && maze[now.i-1][now.j] == 0)   //往左
+        else if(success != 1 && maze[now.i-1][now.j] == 0)   //往上
         {
             maze[now.i][now.j] = 2;
             push(now);
             now.i--;
         }
-        else if(success != 1 && maze[now.i+1][now.j] == 0)   //往右
+        else if(success != 1 && maze[now.i+1][now.j] == 0)   //往下
         {
             maze[now.i][now.j] = 2;
             push(now);
@@ -86,13 +103,26 @@ int main(){
 
         else            //退 回 去
         {
+            maze[now.i][now.j] = 2;
             now = pop();
         }
+        // print_maze();
+        // printf("\n--------------------\n");
+
 
     }
 
-
-    
+    if(now.i == -1 && now.j == -1){
+        printf("fail\n");
+        printf("----------------------\n");
+        print_maze();
+    }
+    else{
+        printf("success\n");
+        printf("----------------------\n");
+        push(end); 
+        print_maze();
+    }
 
     return 0;
 }
